@@ -26,7 +26,7 @@ class RegisterUserRequest extends FormRequest
             'institution' => 'required_if:role,student',
             'share_location' => 'boolean',
             'auto_alert_on_missed_calls' => 'boolean',
-            'student_id' => 'required_if:role,guardian|exists:students,id',
+            'student_id' => 'required_if:role,guardian|integer|exists:students,id',
             'relationship' => 'required_if:role,guardian',
         ];
     }
