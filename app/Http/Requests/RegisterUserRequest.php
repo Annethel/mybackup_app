@@ -17,8 +17,8 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:10', 'min:4', Rule::unique('users', 'name')],
-            'phone' => ['required'],
+            'name' => ['required', 'max:10', 'min:4'],
+            'phone' => ['required', Rule::unique('users', 'phone')],
             'email' => ['required', 'email', Rule::unique('users', 'email')],
             'password' => ['required', 'max:16', 'min:8'],
             'address' => 'nullable',
@@ -26,6 +26,7 @@ class RegisterUserRequest extends FormRequest
             'institution' => 'required_if:role,student',
             'share_location' => 'boolean',
             'auto_alert_on_missed_calls' => 'boolean',
+            'student_id' => 'required_if:role,guardian|exists:students,id',
             'relationship' => 'required_if:role,guardian',
         ];
     }

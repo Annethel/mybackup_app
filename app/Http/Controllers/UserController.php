@@ -35,6 +35,7 @@ class UserController extends Controller
         } elseif ($validated['role'] === 'guardian') {
             Guardian::create([
                 'user_id' => $user->id,
+                'student_id' => $validated['student_id'],
                 'relationship' => $validated['relationship'],
             ]);
         }

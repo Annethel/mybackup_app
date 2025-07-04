@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Guardian;
 use Illuminate\Http\Request;
 
+use App\Models\Student;
+
 class GuardianController extends Controller
 {
     /**
@@ -21,6 +23,26 @@ class GuardianController extends Controller
     public function create()
     {
         //
+    }
+
+    public function getByStudent($studentId)
+    {
+        $student = Student::find($studentId);
+
+        if (!$student) {
+            return response()->json(['error' => 'Student not found.'], 404);
+        }
+
+        $guardian = $student->guardian;
+
+        if (!$guardian) {
+            return response()->json(['error' => 'Guardian not found for this student.'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Guardian retrieved successfully.',
+            'data' => $guardian
+        ]);
     }
 
     /**
