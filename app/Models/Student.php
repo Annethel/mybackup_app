@@ -35,5 +35,10 @@ class Student extends Model
     {
         return $this->hasMany(LinkRequest::class, 'student_id');
     }
+
+    public function guardian()
+    {
+        return $this->hasOne(Guardian::class, 'student_id');
+    }
 }
 
