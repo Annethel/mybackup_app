@@ -25,6 +25,7 @@ class GuardianController extends Controller
         //
     }
 
+
     public function getByStudent($studentId)
     {
         $student = Student::find($studentId);
@@ -33,7 +34,7 @@ class GuardianController extends Controller
             return response()->json(['error' => 'Student not found.'], 404);
         }
 
-        $guardian = $student->guardian;
+        $guardian = $student->guardian()->with('user')->first();
 
         if (!$guardian) {
             return response()->json(['error' => 'Guardian not found for this student.'], 404);
@@ -41,7 +42,16 @@ class GuardianController extends Controller
 
         return response()->json([
             'message' => 'Guardian retrieved successfully.',
-            'data' => $guardian
+            'data' => [
+                'id' => $guardian->id,
+                'relationship' => $guardian->relationship,
+                'user' => [
+                    'id' => $guardian->user->id,
+                    'name' => $guardian->user->name,
+                    'email' => $guardian->user->email,
+                    'phone' => $guardian->user->phone,
+                ],
+            ]
         ]);
     }
 
