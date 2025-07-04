@@ -24,6 +24,9 @@ class UserController extends Controller
         // Create the User
         $user = User::create($validated);
 
+        // Always initialize $studentId
+        $studentId = null;
+
         // Create the role-based profile
         if ($validated['role'] === 'student') {
             $student = Student::create([
