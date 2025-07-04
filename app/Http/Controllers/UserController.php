@@ -26,12 +26,13 @@ class UserController extends Controller
 
         // Create the role-based profile
         if ($validated['role'] === 'student') {
-            Student::create([
+            $student = Student::create([
                 'user_id' => $user->id,
                 'institution' => $validated['institution'],
                 'share_location' => $validated['share_location'] ?? false,
                 'auto_alert_on_missed_calls' => $validated['auto_alert_on_missed_calls'] ?? false,
             ]);
+            $studentId = $student->id;
         } elseif ($validated['role'] === 'guardian') {
             Guardian::create([
                 'user_id' => $user->id,
@@ -47,6 +48,7 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User registered successfully.',
             'user' => $user,
+            'student_id' => $studentId,
             'token' => $token
         ], 201);
     }
@@ -67,11 +69,17 @@ class UserController extends Controller
         }
 
         $user = auth()->user();
+        $studentId = null;
+        if ($user->role === 'student') {
+            $student = Student::where('user_id', $user->id)->first();
+            $studentId = $student ? $student->id : null;
+        }
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful.',
             'user' => $user,
+            'student_id' => $studentId,
             'token' => $token
         ]);
     }
