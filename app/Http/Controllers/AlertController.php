@@ -5,20 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Alert;
 use Illuminate\Http\Request;
 use App\Http\Requests\AlertRequest;
+use App\Services\FirebaseService;
 
 class AlertController extends Controller
 {
     
-   public function store(AlertRequest $request)
+   public function store(AlertRequest $request, FirebaseService $firebase)
 {
     $user = auth()->user();
 
-    if  (!$user->student)  {
+    if (!$user->student) {
         return response()->json(['error' => 'Only students can create alerts.'], 403);
     }
-
-    
-
 
     $alert = Alert::create([
         'student_id' => $user->student->id,
@@ -30,8 +28,23 @@ class AlertController extends Controller
         'sent_at' => now(),
     ]);
 
+    $guardian = $user->student->guardian;
+    if ($guardian && $guardian->fcm_token) {
+        $firebase->sendToDevice($guardian->fcm_token, [
+            'title' => 'SOS Alert from ' . $user->name,
+            'body' => 'Tap to view on map',
+        ], [
+            'type' => 'SOS',
+            'student_id' => $user->student->id,
+            'alert_id' => $alert->id,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    }
+
     return response()->json([
-        'message' => 'Alert created successfully.',
+        'message' => 'Alert created and notification sent.',
         'data' => $alert
     ], 201);
 }

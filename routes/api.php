@@ -20,7 +20,7 @@ Route::post('login',[UserController::class, 'login'])->name('login');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('emergency-contacts', [EmergencyContactController::class, 'store']);
     Route::get('emergency-contacts', [EmergencyContactController::class, 'index']);
-    Route::post('alert', [AlertController::class, 'store']);
+    Route::post('send-alert', [AlertController::class, 'store']);
      Route::get('alert', [AlertController::class, 'index']);
 });
 
